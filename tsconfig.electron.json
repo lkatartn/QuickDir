@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "dist-electron",
+    "module": "commonjs",
+    "target": "es6",
+    "esModuleInterop": true,
+    "noEmit": false,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/main", "src/preload", "src/shared", "src/worker"]
+}

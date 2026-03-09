@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* File item base - default cursor like native explorer */
+.file-item {
+  cursor: default;
+  user-select: none;
+  outline: none;
+  contain: layout style;
+}
+
+/* Selected but container not focused: dashed border */
+.file-item--selected {
+  background-color: #dbeafe; /* bg-blue-100 */
+  outline: 1px dashed #93c5fd; /* blue-300 dashed */
+}
+
+/* Focused item in active (focused) container: solid border */
+.file-item--focused {
+  outline: 2px solid #3b82f6; /* blue-500 solid */
+  outline-offset: -2px;
+}
+
+/* Selected + focused */
+.file-item--selected.file-item--focused {
+  background-color: #bfdbfe; /* bg-blue-200 */
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+}
+
+/* Drag over target highlight */
+.file-item--drop-target {
+  background-color: #dbeafe !important;
+  outline: 2px dashed #3b82f6 !important;
+  outline-offset: -2px;
+}
+
+/* Dragged item dimmed */
+.file-item--dragging {
+  opacity: 0.5;
+}
+
+/* Rubber-band / lasso selection overlay */
+.rubber-band-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  border: 1px solid #3b82f6;
+  background-color: rgba(59, 130, 246, 0.15);
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  will-change: transform;
+  contain: strict;
+}
+
