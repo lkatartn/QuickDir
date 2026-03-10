@@ -1,6 +1,6 @@
 {
   "name": "quickdir",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "QuickDir - High-performance file explorer",
   "main": "dist-electron/main/index.js",
   "scripts": {
@@ -55,8 +55,16 @@
     },
     "dmg": {
       "contents": [
-        { "x": 130, "y": 220 },
-        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "publish": [
