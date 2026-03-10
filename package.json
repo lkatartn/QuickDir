@@ -62,7 +62,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "OWNER",
+        "owner": "lkatartn",
         "repo": "quickdir"
       }
     ]
