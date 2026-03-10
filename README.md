@@ -38,32 +38,39 @@ npm run dev
 
 This starts the Vite dev server and launches Electron with hot reload.
 
-### Build
+### Build locally
 
 ```bash
-# Windows (NSIS installer)
+# Windows (NSIS installer — must run on Windows)
 npm run build:win
 
-# macOS (DMG + ZIP)
+# macOS (DMG + ZIP — must run on macOS)
 npm run build:mac
 
-# Both (auto-detects platform)
+# Auto-detect current platform
 npm run build
 ```
 
 Build artifacts are written to the `release/` directory.
 
+### CI Builds
+
+Pushing a `v*` tag triggers GitHub Actions (`.github/workflows/release.yml`) which builds both Windows and macOS installers in parallel and creates a draft GitHub Release with all artifacts attached. See [RELEASING.md](./RELEASING.md) for the full release workflow.
+
 ## Scripts Reference
 
-| Script                   | Description                          |
-| ------------------------ | ------------------------------------ |
-| `npm run dev`            | Start development server + Electron  |
-| `npm run build`          | Compile + package for current platform |
-| `npm run build:win`      | Build Windows NSIS installer         |
-| `npm run build:mac`      | Build macOS DMG and ZIP              |
+| Script | Description |
+|---|---|
+| `npm run dev` | Start development server + Electron |
+| `npm run build` | Compile + package for current platform |
+| `npm run build:win` | Build Windows NSIS installer |
+| `npm run build:mac` | Build macOS DMG and ZIP |
 | `npm run build:electron` | Compile main/preload TypeScript only |
+| `npm run release:patch` | Bump patch + changelog + commit + tag |
+| `npm run release:minor` | Bump minor + changelog + commit + tag |
+| `npm run release:major` | Bump major + changelog + commit + tag |
 
-For release scripts (`npm run release:patch`, `release:minor`, `release:major`), see [RELEASING.md](./RELEASING.md).
+See [RELEASING.md](./RELEASING.md) for the full release process.
 
 ## Tech Stack
 
