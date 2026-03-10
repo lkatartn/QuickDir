@@ -323,7 +323,7 @@ const App: React.FC = () => {
 
         <label className="flex items-center gap-1 text-sm cursor-pointer mr-2">
           <input type="checkbox" checked={showHidden} onChange={(e) => setShowHidden(e.target.checked)} />
-          Hidden
+          Show hidden
         </label>
         <div className="flex bg-white border rounded">
           <button onClick={() => setViewMode('details')} className={`p-1 ${viewMode === 'details' ? 'bg-blue-100' : 'hover:bg-gray-100'}`} title="Details View">
