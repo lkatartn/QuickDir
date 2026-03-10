@@ -35,14 +35,14 @@ const FileIconDisplay: React.FC<FileIconDisplayProps> = ({ file, size = 'small',
   }, [file.path, file.isDirectory, iconUrl]);
 
   if (file.isDirectory) {
-    return <Folder size={iconSize} className={`text-yellow-500 fill-yellow-200 ${className}`} />;
+    return <Folder size={iconSize} className={`flex-shrink-0 text-yellow-500 fill-yellow-200 ${className}`} />;
   }
 
   if (iconUrl) {
-    return <img src={iconUrl} alt="" className={`object-contain ${className}`} style={{ width: iconSize, height: iconSize }} />;
+    return <img src={iconUrl} alt="" className={`flex-shrink-0 object-contain ${className}`} style={{ width: iconSize, height: iconSize }} />;
   }
 
-  return <FileIcon size={iconSize} className={`text-gray-400 ${className}`} />;
+  return <FileIcon size={iconSize} className={`flex-shrink-0 text-gray-400 ${className}`} />;
 };
 
 export default FileIconDisplay;

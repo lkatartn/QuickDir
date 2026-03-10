@@ -105,16 +105,16 @@ const DetailsView: React.FC<DetailsViewProps> = ({ onOpen, onDelete, onRename, o
     >
       {/* Header */}
       <div className="flex border-b bg-gray-100 text-sm font-semibold text-gray-600 select-none">
-        <div className="flex-1 px-4 py-2 border-r flex items-center gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('name')}>
+        <div className="flex-1 min-w-[200px] shrink-0 px-4 py-2 border-r flex items-center gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('name')}>
           Name <SortIndicator field="name" />
         </div>
-        <div className="w-48 px-4 py-2 border-r flex items-center gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('modifiedMs')}>
+        <div className="w-44 shrink min-w-0 px-4 py-2 border-r flex items-center gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('modifiedMs')}>
           Date modified <SortIndicator field="modifiedMs" />
         </div>
-        <div className="w-32 px-4 py-2 border-r flex items-center gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('extension')}>
+        <div className="w-28 shrink min-w-0 px-4 py-2 border-r flex items-center gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('extension')}>
           Type <SortIndicator field="extension" />
         </div>
-        <div className="w-32 px-4 py-2 text-right flex items-center justify-end gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('size')}>
+        <div className="w-24 shrink min-w-0 px-4 py-2 text-right flex items-center justify-end gap-1 cursor-pointer hover:bg-gray-200" onClick={() => setSort('size')}>
           <SortIndicator field="size" /> Size
         </div>
       </div>
@@ -161,17 +161,17 @@ const DetailsView: React.FC<DetailsViewProps> = ({ onOpen, onDelete, onRename, o
                 onDrop={(e) => file.isDirectory && handleDrop(e, file)}
                 onDragEnd={handleDragEnd}
               >
-                <div className="flex-1 px-4 py-1 flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis">
+                <div className="flex-1 min-w-[200px] shrink-0 px-4 py-1 flex items-center gap-2 overflow-hidden">
                   <FileIconDisplay file={file} size="small" />
                   <span className="truncate">{file.name}</span>
                 </div>
-                <div className="w-48 px-4 py-1 text-gray-500 truncate">
+                <div className="w-44 shrink min-w-0 px-4 py-1 text-gray-500 truncate">
                   {formatDate(file.modifiedMs)}
                 </div>
-                <div className="w-32 px-4 py-1 text-gray-500 truncate">
+                <div className="w-28 shrink min-w-0 px-4 py-1 text-gray-500 truncate">
                   {file.isDirectory ? 'File folder' : file.extension || 'File'}
                 </div>
-                <div className="w-32 px-4 py-1 text-right text-gray-500 truncate">
+                <div className="w-24 shrink min-w-0 px-4 py-1 text-right text-gray-500 truncate">
                   {!file.isDirectory && formatSize(file.size)}
                 </div>
               </div>
