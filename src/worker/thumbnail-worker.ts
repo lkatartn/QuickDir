@@ -8,7 +8,7 @@ import crypto from 'crypto';
 let sharp: any;
 let exifr: any;
 
-const CACHE_DIR = path.join(process.env.APPDATA || process.env.HOME || '', 'electron-explorer', 'thumbnail-cache');
+const CACHE_DIR = path.join(process.env.APPDATA || process.env.HOME || '', 'quickdir', 'thumbnail-cache');
 
 async function init() {
   try {

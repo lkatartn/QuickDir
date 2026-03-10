@@ -1,0 +1,17 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Back Leaf -->
+  <path d="M32 68C32 52.536 44.536 40 60 40H103.5C112.5 40 120.5 45 125 53L131 63.5C135.5 71.5 143.5 76.5 152.5 76.5H196C211.464 76.5 224 89.036 224 104.5V196C224 211.464 211.464 224 196 224H60C44.536 224 32 211.464 32 196V68Z" fill="#FB923C"/>
+  
+  <!-- Inside Shadow / Depth -->
+  <path d="M32 104C32 88.536 44.536 76 60 76H196C211.464 76 224 88.536 224 104V196C224 211.464 211.464 224 196 224H60C44.536 224 32 211.464 32 196V104Z" fill="#EA580C"/>
+
+  <!-- Front Leaf -->
+  <path d="M32 112C32 96.536 44.536 84 60 84H196C211.464 84 224 96.536 224 112V196C224 211.464 211.464 224 196 224H60C44.536 224 32 211.464 32 196V112Z" fill="#F97316"/>
+  
+  <!-- Top Edge Highlight for Front Leaf -->
+  <path d="M32 112C32 96.536 44.536 84 60 84H196C211.464 84 224 96.536 224 112V116C224 100.536 211.464 88 196 88H60C44.536 88 32 100.536 32 116V112Z" fill="#FDBA74"/>
+  
+  <!-- Minimalist Explorer / Search icon in the center -->
+  <circle cx="122" cy="144" r="16" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+  <path d="M134 156L150 172" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+</svg>

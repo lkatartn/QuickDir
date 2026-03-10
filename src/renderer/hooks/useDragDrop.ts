@@ -4,7 +4,7 @@ import { selectionManager } from '../selection/SelectionManager';
 import { joinPath, getFileName } from '../utils/path';
 import type { FileEntry } from '../../shared/types';
 
-const DRAG_MIME = 'application/x-electron-explorer-files';
+const DRAG_MIME = 'application/x-quickdir-files';
 
 export function useDragDrop(onRefresh: () => void) {
   const handleDragStart = useCallback(

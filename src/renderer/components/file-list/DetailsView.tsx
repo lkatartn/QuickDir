@@ -141,11 +141,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({ onOpen, onDelete, onRename, o
                 data-index={virtualRow.index}
                 style={{
                   position: 'absolute',
-                  top: 0,
+                  top: `${virtualRow.start}px`,
                   left: 0,
                   width: '100%',
                   height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
                 }}
                 className="flex items-center text-sm border-b border-gray-100 file-item hover:bg-blue-50"
                 onClick={(e) => handleItemClick(virtualRow.index, e)}

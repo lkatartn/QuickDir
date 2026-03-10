@@ -1,7 +1,7 @@
-# Electron File Explorer - Architecture & Implementation Guide
+# QuickDir - Architecture & Implementation Guide
 
 ## App Overview
-**Electron File Explorer** is a high-performance Windows Explorer replacement built using web technologies. Its primary intention is to provide a fast, customizable, and modern alternative to the native OS file manager, featuring multiple view modes, rapid navigation, and responsive handling of large directories.
+**QuickDir** is a high-performance file explorer built using web technologies. Its primary intention is to provide a fast, customizable, and modern alternative to the native OS file manager, featuring multiple view modes, rapid navigation, and responsive handling of large directories.
 
 ## Tech Stack
 * **Framework:** Electron (Main, Renderer, and Utility processes)
@@ -84,6 +84,25 @@ When navigating or extending this codebase, here is where to find key components
 
 * **Toast Notifications:**
   * `src/renderer/components/common/Toast.tsx`: Subtle bottom-right notification component. Toast state lives in Zustand (`addToast` / `removeToast`). Auto-dismisses after ~3 seconds.
+
+## Commit Message Convention
+
+All commit messages **must** use a prefix to enable automated changelog generation (`scripts/changelog.js`). Format: `prefix: short description`
+
+| Prefix | Use for |
+|---|---|
+| `feat` | New user-facing functionality |
+| `fix` | Bug fixes |
+| `perf` | Performance improvements |
+| `refactor` | Code restructuring with no behavior change |
+| `ui` | Visual/styling changes |
+| `build` | Build config, dependencies, scripts |
+| `docs` | Documentation only |
+| `chore` | Maintenance tasks (cleanup, tooling, etc.) |
+
+Scopes are optional: `feat(column-view): add keyboard navigation`
+
+Release commits are auto-generated as `release: vX.Y.Z` and excluded from the changelog.
 
 ## Deferred Features & Known Intentional Gaps
 
