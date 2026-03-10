@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2026-03-10
+
+### Build
+
+- add CI workflow and update release docs (f33b0a4)
+
 ## [1.0.0] - 2026-03-10
 
 ### Build
