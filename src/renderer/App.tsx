@@ -350,7 +350,15 @@ const App: React.FC = () => {
         <Sidebar />
         <main className="flex-1 overflow-hidden flex flex-col relative min-h-0">
           {error ? (
-            <div className="flex-1 flex items-center justify-center text-red-500 bg-red-50"><p>{error}</p></div>
+            <div className="flex-1 flex flex-col items-center justify-center bg-red-50 gap-3">
+              <p className="text-red-500">{error}</p>
+              <button
+                onClick={handleRefresh}
+                className="px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-700 text-sm"
+              >
+                Retry
+              </button>
+            </div>
           ) : (
             <>
               {viewMode === 'details' && <DetailsView onOpen={handleOpen} onDelete={handleDelete} onRename={handleRename} onRefresh={handleRefresh} />}

@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs/promises';
 import { NodeFSProvider } from './providers/node-fs-provider';
 import { ThumbnailManager, setupThumbnailIPC } from './ipc/thumbnails';
 import { FileWatcher } from './watcher';
@@ -8,6 +9,36 @@ let mainWindow: BrowserWindow | null = null;
 const fsProvider = new NodeFSProvider();
 // const thumbnailManager = new ThumbnailManager();
 const fileWatcher = new FileWatcher();
+
+async function hasFullDiskAccess(): Promise<boolean> {
+  try {
+    await fs.readdir(app.getPath('downloads'));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function promptForFullDiskAccess() {
+  if (process.platform !== 'darwin') return;
+  if (await hasFullDiskAccess()) return;
+
+  const { response } = await dialog.showMessageBox({
+    type: 'info',
+    title: 'QuickDir needs Full Disk Access',
+    message: 'QuickDir needs Full Disk Access to browse your files.',
+    detail:
+      'Without this, macOS will block access to Desktop, Documents, Downloads, and other protected folders.\n\n' +
+      'Click "Open Settings" to grant access, then restart QuickDir.',
+    buttons: ['Open Settings', 'Later'],
+    defaultId: 0,
+    cancelId: 1,
+  });
+
+  if (response === 0) {
+    shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles');
+  }
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -30,8 +61,9 @@ function createWindow() {
   fileWatcher.setWindow(mainWindow);
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   Menu.setApplicationMenu(null);
+  await promptForFullDiskAccess();
   createWindow();
   // setupThumbnailIPC(thumbnailManager);
 

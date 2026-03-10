@@ -51,7 +51,14 @@
         "zip"
       ],
       "icon": "build/icon.icns",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "extendInfo": {
+        "NSDesktopFolderUsageDescription": "QuickDir needs access to your Desktop to browse and manage files.",
+        "NSDocumentsFolderUsageDescription": "QuickDir needs access to your Documents to browse and manage files.",
+        "NSDownloadsFolderUsageDescription": "QuickDir needs access to your Downloads to browse and manage files.",
+        "NSRemovableVolumesUsageDescription": "QuickDir needs access to external drives to browse and manage files.",
+        "NSNetworkVolumesUsageDescription": "QuickDir needs access to network drives to browse and manage files."
+      }
     },
     "dmg": {
       "contents": [
