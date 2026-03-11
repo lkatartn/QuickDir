@@ -19,7 +19,12 @@ export class NodeFSProvider implements FileSystemProvider {
   }
 
   async readDirectory(dirPath: string, options?: { showHidden: boolean }): Promise<FileEntry[]> {
-    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    let entries: import('fs').Dirent[];
+    try {
+      entries = await fs.readdir(dirPath, { withFileTypes: true });
+    } catch (err: any) {
+      throw new Error(`Cannot read directory: ${err.code || err.message}`);
+    }
 
     const windowsHidden = process.platform === 'win32'
       ? await this.getWindowsHiddenFiles(dirPath)
@@ -30,29 +35,43 @@ export class NodeFSProvider implements FileSystemProvider {
 
     for (let i = 0; i < entries.length; i += concurrency) {
       const chunk = entries.slice(i, i + concurrency);
-      const results = await Promise.all(
+      const results = await Promise.allSettled(
         chunk.map(async (entry) => {
           const fullPath = path.join(dirPath, entry.name);
           const isHidden = windowsHidden
             ? (windowsHidden.has(entry.name) || entry.name.startsWith('.'))
             : entry.name.startsWith('.');
+
+          let isDir = false;
+          try { isDir = entry.isDirectory(); } catch { /* dirent type unknown */ }
+
           try {
-            const stats = await fs.stat(fullPath);
+            const stats = await fs.lstat(fullPath);
+            if (stats.isSymbolicLink()) {
+              try {
+                const targetStats = await fs.stat(fullPath);
+                isDir = targetStats.isDirectory();
+              } catch {
+                // Broken symlink — keep lstat info
+              }
+            } else {
+              isDir = stats.isDirectory();
+            }
             return {
               name: entry.name,
               path: fullPath,
-              isDirectory: entry.isDirectory(),
+              isDirectory: isDir,
               size: stats.size,
               modifiedMs: stats.mtimeMs,
               createdMs: stats.birthtimeMs,
               isHidden,
               extension: path.extname(entry.name),
             };
-          } catch (error) {
+          } catch {
             return {
               name: entry.name,
               path: fullPath,
-              isDirectory: entry.isDirectory(),
+              isDirectory: isDir,
               size: 0,
               modifiedMs: 0,
               createdMs: 0,
@@ -62,7 +81,12 @@ export class NodeFSProvider implements FileSystemProvider {
           }
         })
       );
-      fileEntries.push(...results);
+
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          fileEntries.push(result.value);
+        }
+      }
     }
 
     return fileEntries.filter(e => options?.showHidden ? true : !e.isHidden);

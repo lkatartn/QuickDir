@@ -5,6 +5,13 @@ import { NodeFSProvider } from './providers/node-fs-provider';
 import { ThumbnailManager, setupThumbnailIPC } from './ipc/thumbnails';
 import { FileWatcher } from './watcher';
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+
 let mainWindow: BrowserWindow | null = null;
 const fsProvider = new NodeFSProvider();
 // const thumbnailManager = new ThumbnailManager();
