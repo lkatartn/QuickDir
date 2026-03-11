@@ -40,6 +40,8 @@ export const api = {
     ipcRenderer.invoke('fs:openFile', filePath),
   getUserPaths: (): Promise<UserPaths> =>
     ipcRenderer.invoke('fs:getUserPaths'),
+  listTrash: (): Promise<FileEntry[]> =>
+    ipcRenderer.invoke('fs:listTrash'),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

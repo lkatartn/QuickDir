@@ -151,3 +151,7 @@ ipcMain.handle('fs:getUserPaths', async () => {
     videos: app.getPath('videos'),
   };
 });
+
+ipcMain.handle('fs:listTrash', async () => {
+  return fsProvider.listTrash();
+});

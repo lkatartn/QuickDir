@@ -8,6 +8,7 @@ export interface FileSystemProvider {
   copy(src: string, dest: string): Promise<void>;
   move(src: string, dest: string): Promise<void>;
   trash(filePath: string): Promise<void>;
+  listTrash(): Promise<FileEntry[]>;
   getDrives(): Promise<DriveInfo[]>;
   exists(filePath: string): Promise<boolean>;
 }

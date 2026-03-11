@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as os from 'os';
 import { FileSystemProvider } from './types';
 import { FileEntry, DriveInfo } from '../../shared/types';
 import { exec } from 'child_process';
@@ -109,6 +110,117 @@ export class NodeFSProvider implements FileSystemProvider {
   async trash(filePath: string): Promise<void> {
     const { shell } = require('electron');
     await shell.trashItem(filePath);
+  }
+
+  async listTrash(): Promise<FileEntry[]> {
+    if (process.platform === 'win32') {
+      return this.listWindowsTrash();
+    }
+    const trashDir = process.platform === 'darwin'
+      ? path.join(os.homedir(), '.Trash')
+      : path.join(os.homedir(), '.local/share/Trash/files');
+    try {
+      return await this.readDirectory(trashDir, { showHidden: true });
+    } catch {
+      return [];
+    }
+  }
+
+  private async listWindowsTrash(): Promise<FileEntry[]> {
+    const drives = await this.getDrives();
+    const entries: FileEntry[] = [];
+    const concurrency = 50;
+
+    for (const drive of drives) {
+      const recyclePath = path.join(drive.path, '$Recycle.Bin');
+      let sidDirs: string[];
+      try {
+        sidDirs = await fs.readdir(recyclePath);
+      } catch {
+        continue;
+      }
+
+      for (const sid of sidDirs) {
+        const sidPath = path.join(recyclePath, sid);
+        let iFiles: string[];
+        try {
+          iFiles = (await fs.readdir(sidPath)).filter(f => f.startsWith('$I'));
+        } catch {
+          continue;
+        }
+
+        for (let i = 0; i < iFiles.length; i += concurrency) {
+          const chunk = iFiles.slice(i, i + concurrency);
+          const results = await Promise.all(
+            chunk.map(async (iFile) => {
+              try {
+                const iPath = path.join(sidPath, iFile);
+                const buf = await fs.readFile(iPath);
+                const meta = this.parseRecycleBinMeta(buf);
+                if (!meta) return null;
+
+                const rFile = '$R' + iFile.substring(2);
+                const rPath = path.join(sidPath, rFile);
+                const originalName = path.basename(meta.originalPath);
+
+                let isDirectory = false;
+                let size = Number(meta.originalSize);
+                try {
+                  const stat = await fs.stat(rPath);
+                  isDirectory = stat.isDirectory();
+                  size = stat.size;
+                } catch { /* $R file may be gone */ }
+
+                return {
+                  name: originalName,
+                  path: rPath,
+                  isDirectory,
+                  size,
+                  modifiedMs: meta.deletionTimeMs,
+                  createdMs: meta.deletionTimeMs,
+                  isHidden: false,
+                  extension: isDirectory ? '' : path.extname(originalName),
+                } satisfies FileEntry;
+              } catch {
+                return null;
+              }
+            }),
+          );
+          for (const r of results) if (r) entries.push(r);
+        }
+      }
+    }
+
+    return entries;
+  }
+
+  // $I file binary format (Windows 10+ v2 / Vista-8 v1)
+  private parseRecycleBinMeta(buf: Buffer): {
+    originalSize: bigint;
+    deletionTimeMs: number;
+    originalPath: string;
+  } | null {
+    if (buf.length < 28) return null;
+
+    const version = buf.readBigInt64LE(0);
+    const originalSize = buf.readBigInt64LE(8);
+    const fileTime = buf.readBigInt64LE(16);
+
+    // FILETIME → Unix ms: 100ns ticks since 1601-01-01 → ms since 1970-01-01
+    const FILETIME_EPOCH_DIFF = BigInt('11644473600000');
+    const deletionTimeMs = Number(fileTime / BigInt(10000) - FILETIME_EPOCH_DIFF);
+
+    let originalPath: string;
+    if (version === BigInt(2)) {
+      const pathLenChars = buf.readInt32LE(24);
+      originalPath = buf.subarray(28, 28 + pathLenChars * 2).toString('utf16le').replace(/\0+$/, '');
+    } else if (version === BigInt(1)) {
+      originalPath = buf.subarray(24, 24 + 520).toString('utf16le').replace(/\0+$/, '');
+    } else {
+      return null;
+    }
+
+    return { originalSize, deletionTimeMs, originalPath };
   }
 
   async exists(filePath: string): Promise<boolean> {

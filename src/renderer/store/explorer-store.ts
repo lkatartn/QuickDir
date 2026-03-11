@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { TRASH_PATH } from '../../shared/types';
 import type { FileEntry } from '../../shared/types';
 
 export type ViewMode = 'details' | 'grid' | 'column';
@@ -143,6 +144,7 @@ export const useExplorerStore = create<ExplorerState>((set, get) => ({
 
   goUp: () => {
     const { currentPath } = get();
+    if (currentPath === TRASH_PATH) return;
     const parts = currentPath.split(/[/\\]/).filter(Boolean);
     if (parts.length > 1) {
       parts.pop();
@@ -182,10 +184,15 @@ export const useExplorerStore = create<ExplorerState>((set, get) => ({
 
   refresh: async () => {
     const { currentPath, showHidden } = get();
-    set({ isLoading: true, error: null });
+    const isTrash = currentPath === TRASH_PATH;
+    set({ ...(isTrash && { files: [] }), isLoading: true, error: null });
     try {
       // @ts-ignore
-      const files = await window.electronAPI.readDirectory(currentPath, { showHidden });
+      const files = currentPath === TRASH_PATH
+        // @ts-ignore
+        ? await window.electronAPI.listTrash()
+        // @ts-ignore
+        : await window.electronAPI.readDirectory(currentPath, { showHidden });
       set({ files });
     } catch (e: any) {
       console.error(e);

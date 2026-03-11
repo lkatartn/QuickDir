@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useExplorerStore } from '../../store/explorer-store';
 import {
   HardDrive, Home, Monitor, FileText,
-  Download, Image, Music, Video,
+  Download, Image, Music, Video, Trash2,
 } from 'lucide-react';
+import { TRASH_PATH } from '../../../shared/types';
 import type { DriveInfo, UserPaths } from '../../../shared/types';
 
 interface QuickAccessItem {
@@ -132,6 +133,20 @@ const Sidebar: React.FC = () => {
           </li>
         ))}
       </ul>
+
+      <div className="mx-3 my-2 border-t border-gray-200" />
+
+      <div className="px-3 pb-2">
+        <button
+          onClick={() => setCurrentPath(TRASH_PATH)}
+          className={`w-full text-left px-3 py-1.5 flex items-center gap-2.5 hover:bg-gray-200 rounded transition-colors ${
+            currentPath === TRASH_PATH ? 'bg-blue-100' : ''
+          }`}
+        >
+          <Trash2 size={16} className="text-gray-500 flex-shrink-0" />
+          <span className="truncate">Trash</span>
+        </button>
+      </div>
 
       {/* Resize handle */}
       <div

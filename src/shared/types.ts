@@ -1,3 +1,5 @@
+export const TRASH_PATH = 'quickdir://trash';
+
 export interface FileEntry {
   name: string;
   path: string;
