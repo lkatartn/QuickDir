@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0] - 2026-03-11
+
+### Features
+
+- Add trash viewing support for windows and mac (0d89416)
+
+### Bug Fixes
+
+- handle macOS folder permissions and Full Disk Access prompt (bc5e2c5)
+
+### UI Changes
+
+- improve table layout for small screens, make sidebar resizeable (f644e38)
+
+### Chores
+
+- wording improvement (4ff63a6)
+
 ## [1.0.1] - 2026-03-10
 
 ### Build
