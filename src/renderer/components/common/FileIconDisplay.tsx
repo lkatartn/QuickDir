@@ -9,14 +9,33 @@ interface FileIconDisplayProps {
   gridSize?: number;
 }
 
-const iconCache = new Map<string, string>();
+// Cache by file extension so we fetch one icon per type and reuse for all files of that type
+const extensionIconCache = new Map<string, string>();
+
+function getExtensionKey(file: FileEntry): string {
+  return file.extension ?? '';
+}
 
 const FileIconDisplay: React.FC<FileIconDisplayProps> = ({ file, size = 'small', className = '' }) => {
-  const [iconUrl, setIconUrl] = useState<string | null>(iconCache.get(file.path) || null);
+  const extKey = getExtensionKey(file);
+  const [iconUrl, setIconUrl] = useState<string | null>(() =>
+    file.isDirectory ? null : extensionIconCache.get(extKey) ?? null,
+  );
   const iconSize = size === 'small' ? 16 : 48;
 
+  // Sync state when file (path/extension) changes (e.g. virtual list reuses row by index)
   useEffect(() => {
-    if (file.isDirectory || iconUrl) return;
+    if (file.isDirectory) {
+      setIconUrl(null);
+      return;
+    }
+    setIconUrl(extensionIconCache.get(extKey) ?? null);
+  }, [file.path, file.isDirectory, extKey]);
+
+  useEffect(() => {
+    // Never fetch icons for directories — use plain folder icon only
+    if (file.isDirectory) return;
+    if (iconUrl) return;
 
     let isMounted = true;
     const fetchIcon = async () => {
@@ -24,7 +43,7 @@ const FileIconDisplay: React.FC<FileIconDisplayProps> = ({ file, size = 'small',
         // @ts-ignore
         const url = await window.electronAPI.getFileIcon(file.path);
         if (url && isMounted) {
-          iconCache.set(file.path, url);
+          extensionIconCache.set(extKey, url);
           setIconUrl(url);
         }
       } catch { /* icon fetch failed, keep generic icon */ }
@@ -32,7 +51,7 @@ const FileIconDisplay: React.FC<FileIconDisplayProps> = ({ file, size = 'small',
 
     fetchIcon();
     return () => { isMounted = false; };
-  }, [file.path, file.isDirectory, iconUrl]);
+  }, [file.path, file.isDirectory, extKey, iconUrl]);
 
   if (file.isDirectory) {
     return <Folder size={iconSize} className={`flex-shrink-0 text-yellow-500 fill-yellow-200 ${className}`} />;

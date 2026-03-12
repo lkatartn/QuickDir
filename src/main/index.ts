@@ -133,7 +133,34 @@ ipcMain.handle('fs:getDrives', async () => {
   }
 });
 
+// On macOS, process getFileIcon requests one at a time to avoid IconServices/Node crash when many run concurrently
+type GetFileIconTask = { filePath: string; resolve: (value: string | null) => void; reject: (err: Error) => void };
+let getFileIconQueue: GetFileIconTask[] = [];
+let getFileIconProcessing = false;
+
+async function processGetFileIconQueue() {
+  if (getFileIconProcessing || getFileIconQueue.length === 0) return;
+  getFileIconProcessing = true;
+  const task = getFileIconQueue.shift()!;
+  try {
+    const icon = await app.getFileIcon(task.filePath, { size: 'large' });
+    task.resolve(icon.toDataURL());
+  } catch (error) {
+    console.error('Error getting file icon:', error);
+    task.resolve(null);
+  } finally {
+    getFileIconProcessing = false;
+    if (getFileIconQueue.length > 0) processGetFileIconQueue();
+  }
+}
+
 ipcMain.handle('fs:getFileIcon', async (_, filePath: string) => {
+  if (process.platform === 'darwin') {
+    return new Promise<string | null>((resolve, reject) => {
+      getFileIconQueue.push({ filePath, resolve, reject });
+      processGetFileIconQueue();
+    });
+  }
   try {
     const icon = await app.getFileIcon(filePath, { size: 'large' });
     return icon.toDataURL();
