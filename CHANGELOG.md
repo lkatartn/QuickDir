@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1] - 2026-03-12
+
+### Features
+
+- add debug info modal with mailto for user support (6991056)
+
+### Bug Fixes
+
+- harden directory reading for macOS symlinks and iCloud files (7a01161)
+
 ## [1.1.0] - 2026-03-11
 
 ### Features
