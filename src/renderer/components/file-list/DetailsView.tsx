@@ -137,7 +137,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({ onOpen, onDelete, onRename, o
             const file = sortedFiles[virtualRow.index];
             return (
               <div
-                key={virtualRow.index}
+                key={file.path}
                 data-index={virtualRow.index}
                 style={{
                   position: 'absolute',
