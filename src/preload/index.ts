@@ -42,6 +42,8 @@ export const api = {
     ipcRenderer.invoke('fs:getUserPaths'),
   listTrash: (): Promise<FileEntry[]> =>
     ipcRenderer.invoke('fs:listTrash'),
+  getDebugInfo: (payload?: { currentPath?: string; viewMode?: string; lastError?: string | null }): Promise<{ debugInfo: string }> =>
+    ipcRenderer.invoke('app:getDebugInfo', payload),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

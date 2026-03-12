@@ -8,6 +8,7 @@ import ColumnView from "./components/column-view/ColumnView";
 import ContextMenu from "./components/common/ContextMenu";
 import Toast from "./components/common/Toast";
 import InputDialog from "./components/common/InputDialog";
+import DebugInfoModal from "./components/common/DebugInfoModal";
 import { joinPath, getFileName, getParentDir } from "./utils/path";
 import { TRASH_PATH } from "../shared/types";
 import {
@@ -20,6 +21,7 @@ import {
   Columns,
   FolderPlus,
   Loader2,
+  HelpCircle,
 } from "lucide-react";
 
 interface DialogState {
@@ -56,6 +58,8 @@ const App: React.FC = () => {
   const hideContextMenu = useExplorerStore((s) => s.hideContextMenu);
 
   const [dialog, setDialog] = useState<DialogState | null>(null);
+  const [showDebugModal, setShowDebugModal] = useState(false);
+  const [debugInfo, setDebugInfo] = useState("");
 
   useEffect(() => {
     selectionManager.onCountChange((count) => {
@@ -328,6 +332,22 @@ const App: React.FC = () => {
     return () => window.removeEventListener("click", onClick);
   }, [hideContextMenu]);
 
+  const openDebugModal = useCallback(async () => {
+    try {
+      // @ts-ignore
+      const { debugInfo: info } = await window.electronAPI.getDebugInfo({
+        currentPath,
+        viewMode,
+        lastError: error ?? null,
+      });
+      setDebugInfo(info);
+      setShowDebugModal(true);
+    } catch {
+      setDebugInfo("Failed to load debug information.");
+      setShowDebugModal(true);
+    }
+  }, [currentPath, viewMode, error]);
+
   return (
     <div className="flex flex-col h-screen bg-white text-gray-800">
       {/* Toolbar */}
@@ -436,6 +456,13 @@ const App: React.FC = () => {
             </button>
           </div>
         )}
+        <button
+          onClick={openDebugModal}
+          className="p-1 hover:bg-gray-200 rounded ml-1"
+          title="Debug information"
+        >
+          <HelpCircle size={20} />
+        </button>
       </div>
 
       <div className="flex flex-1 overflow-hidden min-h-0">
@@ -444,12 +471,20 @@ const App: React.FC = () => {
           {error ? (
             <div className="flex-1 flex flex-col items-center justify-center bg-red-50 gap-3">
               <p className="text-red-500">{error}</p>
-              <button
-                onClick={handleRefresh}
-                className="px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-700 text-sm"
-              >
-                Retry
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleRefresh}
+                  className="px-4 py-1.5 bg-gray-800 text-white rounded hover:bg-gray-700 text-sm"
+                >
+                  Retry
+                </button>
+                <button
+                  onClick={openDebugModal}
+                  className="px-4 py-1.5 border border-gray-400 rounded hover:bg-gray-100 text-sm"
+                >
+                  Send debug info
+                </button>
+              </div>
             </div>
           ) : isLoading && files.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
@@ -515,6 +550,11 @@ const App: React.FC = () => {
           onCancel={() => setDialog(null)}
         />
       )}
+      <DebugInfoModal
+        visible={showDebugModal}
+        debugInfo={debugInfo}
+        onClose={() => setShowDebugModal(false)}
+      />
     </div>
   );
 };

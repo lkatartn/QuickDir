@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron';
 import * as path from 'path';
+import * as os from 'os';
 import * as fs from 'fs/promises';
 import { NodeFSProvider } from './providers/node-fs-provider';
 import { ThumbnailManager, setupThumbnailIPC } from './ipc/thumbnails';
@@ -161,4 +162,23 @@ ipcMain.handle('fs:getUserPaths', async () => {
 
 ipcMain.handle('fs:listTrash', async () => {
   return fsProvider.listTrash();
+});
+
+// Debug info for user support (modal + mailto)
+interface GetDebugInfoPayload {
+  currentPath?: string;
+  viewMode?: string;
+  lastError?: string | null;
+}
+ipcMain.handle('app:getDebugInfo', async (_, payload?: GetDebugInfoPayload): Promise<{ debugInfo: string }> => {
+  const p = payload ?? {};
+  const lines: string[] = [
+    `QuickDir ${app.getVersion()}`,
+    `Electron ${process.versions.electron} | Node ${process.versions.node} | Chrome ${process.versions.chrome}`,
+    `Platform: ${process.platform} (${os.release()}) | Arch: ${process.arch}`,
+    `Current path: ${p.currentPath ?? '(none)'}`,
+    `View: ${p.viewMode ?? '(none)'}`,
+    `Last error: ${p.lastError ?? '(none)'}`,
+  ];
+  return { debugInfo: lines.join('\n') };
 });
