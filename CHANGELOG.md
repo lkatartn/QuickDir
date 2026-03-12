@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2] - 2026-03-12
+
+### Bug Fixes
+
+- stale icons fixed (481cc63)
+- prevent crash when opening Desktop/Documents/Downloads (92257a5)
+
 ## [1.1.1] - 2026-03-12
 
 ### Features
